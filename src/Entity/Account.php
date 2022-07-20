@@ -14,7 +14,7 @@ class Account
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column()]
-    #[Groups(['getAccounts'])]
+    #[Groups(['getAccounts', 'getUsers'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 55)]
@@ -172,7 +172,7 @@ class Account
         return $this->matricule;
     }
 
-    public function setMatricule(string $matricule): self
+    public function setMatricule(?string $matricule): self
     {
         $this->matricule = $matricule;
 
@@ -184,7 +184,7 @@ class Account
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(?string $status): self
     {
         $this->status = $status;
 

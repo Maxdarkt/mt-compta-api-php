@@ -55,7 +55,7 @@ class User
     #[Groups(['getUsers', 'getAccounts'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\ManyToOne(inversedBy: 'users', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['getUsers'])]
     private ?Account $account = null;
