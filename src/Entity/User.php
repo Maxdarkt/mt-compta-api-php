@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -11,40 +12,52 @@ class User
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column()]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 55)]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 55)]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 15)]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?string $mobile = null;
 
     #[ORM\Column(length: 55, nullable: true)]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?string $fonction = null;
 
     #[ORM\Column]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?int $role = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?bool $isValidatedEmail = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Groups(['getUsers', 'getAccounts'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['getUsers'])]
     private ?Account $account = null;
 
     public function getId(): ?int

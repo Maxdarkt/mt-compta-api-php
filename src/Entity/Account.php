@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\AccountRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AccountRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 class Account
@@ -13,42 +14,63 @@ class Account
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column()]
+    #[Groups(['getAccounts'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 55)]
+    #[Groups(['getAccounts'])]
     private ?string $company = null;
 
     #[ORM\Column(length: 55, nullable: true)]
+    #[Groups(['getAccounts'])]
     private ?string $division = null;
 
     #[ORM\Column(length: 150, nullable: true)]
+    #[Groups(['getAccounts'])]
     private ?string $complement = null;
 
     #[ORM\Column(length: 150)]
+    #[Groups(['getAccounts'])]
     private ?string $address = null;
 
     #[ORM\Column]
+    #[Groups(['getAccounts'])]
     private ?int $postal = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['getAccounts'])]
     private ?string $city = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['getAccounts'])]
     private ?string $country = null;
 
+    #[ORM\Column(length: 150, nullable: true)]
+    #[Groups(['getAccounts'])]
+    private ?string $matricule = null;
+
+    #[ORM\Column(length: 150, nullable: true)]
+    #[Groups(['getAccounts'])]
+    private ?string $status = null;
+
     #[ORM\Column(length: 10)]
+    #[Groups(['getAccounts'])]
     private ?string $currency = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['getAccounts'])]
     private ?bool $isValidatedAccount = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['getAccounts'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Groups(['getAccounts'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\OneToMany(mappedBy: 'account', targetEntity: User::class, orphanRemoval: true)]
+    #[Groups(['getAccounts'])]
     private Collection $users;
 
     public function __construct()
@@ -141,6 +163,30 @@ class Account
     public function setCountry(string $country): self
     {
         $this->country = $country;
+
+        return $this;
+    }
+
+    public function getMatricule(): ?string
+    {
+        return $this->matricule;
+    }
+
+    public function setMatricule(string $matricule): self
+    {
+        $this->matricule = $matricule;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }
