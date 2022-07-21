@@ -15,6 +15,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class AccountController extends AbstractController
 {
+    /**
+     * getAllAccounts
+     * @return jsonResponse Returns an array of Accounts Object
+     */
     #[Route('/api/accounts', name: 'getAllAccounts', methods: ['GET'])]
     public function getAllAccounts(AccountRepository $accountRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -30,13 +34,21 @@ class AccountController extends AbstractController
       return new JsonResponse($jsonAccounts, 200, ['accept' => 'json'], true);
     }
 
-    #[Route('/api/accounts/{id}', name: 'getAccount', methods: ['GET'])]
-    public function getAccount(Account $account, SerializerInterface $serializer): JsonResponse
+    /**
+     * detailAccount
+     * @return jsonResponse Returns an array of One account Object
+     */
+    #[Route('/api/accounts/{id}', name: 'detailAccount', methods: ['GET'])]
+    public function getDetailAccount(Account $account, SerializerInterface $serializer): JsonResponse
     {
       $jsonAccount = $serializer->serialize($account, 'json', ['groups' => 'getAccounts']);
       return new JsonResponse($jsonAccount, 200, ['accept' => 'json'], true);
     }
 
+    /**
+     * deleteAccount
+     * @return jsonResponse Returns a message with the id of the deleted account
+     */
     #[Route('/api/accounts/{id}', name: 'deleteAccount', methods: ['DELETE'])]
     public function deleteAccount(Account $account, EntityManagerInterface $em): JsonResponse
     {
@@ -50,6 +62,10 @@ class AccountController extends AbstractController
       return new JsonResponse($message, 200, ['accept' => 'json'], false);
     }
 
+    /**
+     * createAccount
+     * @return jsonResponse Returns an array of account objects created
+     */
     #[Route('/api/accounts', name: 'createAccount', methods: ['POST'])]
     public function createAccount(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, AccountRepository $accountRepository): JsonResponse
     {
@@ -65,6 +81,10 @@ class AccountController extends AbstractController
       return new JsonResponse($jsonAccount, 200, ['accept' => 'json'], true);
     }
 
+    /**
+     * updateAccount
+     * @return jsonResponse Returns an array of account objects updated
+     */
     #[Route('/api/accounts/{id}', name: 'updateAccount', methods: ['PUT'])]
     public function updateAccount(Request $request, SerializerInterface $serializer, Account $currentAccount, EntityManagerInterface $em, AccountRepository $accountRepository): JsonResponse
     {

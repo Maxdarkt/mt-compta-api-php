@@ -17,6 +17,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class UserController extends AbstractController
 {
+    /**
+     * getAllUsers
+     * @return jsonResponse Returns an array of Users Object
+     */
     #[Route('/api/users', name: 'getAllUsers', methods: ['GET'])]
     public function getAllUsers(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -32,6 +36,10 @@ class UserController extends AbstractController
       return new JsonResponse($jsonUsers, 200, ['accept' => 'json'], true);
     }
 
+    /**
+     * detailUser
+     * @return jsonResponse Returns an array of One User Object
+     */
     #[Route('/api/users/{id}', name: 'detailUser', methods: ['GET'])]
     public function getDetailUser(User $user, SerializerInterface $serializer): JsonResponse
     {
@@ -39,6 +47,10 @@ class UserController extends AbstractController
       return new JsonResponse($jsonUser, 200, ['accept' => 'json'], true);
     }
 
+    /**
+     * deleteUser
+     * @return jsonResponse Returns a message with the id of the deleted user
+     */
     #[Route('/api/users/{id}', name: 'deleteUser', methods: ['DELETE'])]
     public function deleteUser(User $user, EntityManagerInterface $em): JsonResponse
     {
@@ -52,6 +64,10 @@ class UserController extends AbstractController
       return new JsonResponse($message, 200, ['accept' => 'json'], false);
     }
 
+    /**
+     * createUser
+     * @return jsonResponse Returns an array of user objects created
+     */
     #[Route('/api/users', name: 'createUser', methods: ['POST'])]
     public function createUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, AccountRepository $accountRepository): JsonResponse
     {
@@ -74,6 +90,10 @@ class UserController extends AbstractController
       return new JsonResponse($jsonUser, 200, ['accept' => 'json'], true);
     }
 
+    /**
+     * updateAccount
+     * @return jsonResponse Returns an array of user objects updated
+     */
     #[Route('/api/users/{id}', name: 'updateAccount', methods: ['PUT'])]
     public function updateAccount(Request $request, SerializerInterface $serializer, User $currentUser, EntityManagerInterface $em, AccountRepository $accountRepository): JsonResponse
     {
@@ -93,6 +113,4 @@ class UserController extends AbstractController
 
       return new JsonResponse($jsonUpdatedUser, 200, ['accept' => 'json'], true);
     }
-
-
 }
