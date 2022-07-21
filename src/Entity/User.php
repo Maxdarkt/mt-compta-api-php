@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -17,22 +18,30 @@ class User
 
     #[ORM\Column(length: 55)]
     #[Groups(['getUsers', 'getAccounts'])]
+    #[Assert\NotBlank(message: 'The lastName cannot be empty.')]
+    #[Assert\Length(min: 2, max: 55, minMessage: 'the lastName must be at least {{ limit }} characters long', maxMessage: 'the lastName must have a maximum of {{ limit }} characters')]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 55)]
     #[Groups(['getUsers', 'getAccounts'])]
+    #[Assert\NotBlank(message: 'The firstName cannot be empty.')]
+    #[Assert\Length(min: 2, max: 55, minMessage: 'the firstName must be at least {{ limit }} characters long', maxMessage: 'the firstName must have a maximum of {{ limit }} characters')]
     private ?string $firstName = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, unique: true)]
     #[Groups(['getUsers', 'getAccounts'])]
+    #[Assert\NotBlank(message: 'The firstName cannot be empty.')]
+    #[Assert\Length(min: 2, max: 55, minMessage: 'the firstName must be at least {{ limit }} characters long', maxMessage: 'the firstName must have a maximum of {{ limit }} characters')]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['getUsers', 'getAccounts'])]
+    #[Assert\NotBlank(message: 'The password cannot be empty.')]
     private ?string $password = null;
 
     #[ORM\Column(length: 15)]
     #[Groups(['getUsers', 'getAccounts'])]
+    #[Assert\NotBlank(message: 'The mobile cannot be empty.')]
     private ?string $mobile = null;
 
     #[ORM\Column(length: 55, nullable: true)]
@@ -41,6 +50,7 @@ class User
 
     #[ORM\Column]
     #[Groups(['getUsers', 'getAccounts'])]
+    #[Assert\NotBlank(message: 'The role cannot be empty.')]
     private ?int $role = null;
 
     #[ORM\Column(nullable: true)]

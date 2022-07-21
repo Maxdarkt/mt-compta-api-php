@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -23,6 +24,7 @@ class AccountController extends AbstractController
     public function getAllAccounts(AccountRepository $accountRepository, SerializerInterface $serializer): JsonResponse
     {
       $accounts = $accountRepository->findAll();
+      // if $account is empty
       if(count($accounts) === 0) {
         $message = [
           'statusCode' => 404,
@@ -30,6 +32,7 @@ class AccountController extends AbstractController
         ];
         return new JsonResponse($message, 404, ['accept' => 'json'], false);
       }
+      // if $account is filled
       $jsonAccounts = $serializer->serialize($accounts, 'json', ['groups' => 'getAccounts']);
       return new JsonResponse($jsonAccounts, 200, ['accept' => 'json'], true);
     }
@@ -67,12 +70,21 @@ class AccountController extends AbstractController
      * @return jsonResponse Returns an array of account objects created
      */
     #[Route('/api/accounts', name: 'createAccount', methods: ['POST'])]
-    public function createAccount(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, AccountRepository $accountRepository): JsonResponse
+    public function createAccount(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, AccountRepository $accountRepository, ValidatorInterface $validator): JsonResponse
     {
       $account = $serializer->deserialize($request->getContent(), Account::class, 'json');
+      
       $date = new \DateTimeImmutable();
       $account->setCreatedAt($date);
       $account->setUpdatedAt($date);
+
+      // we check errors
+      $errors = $validator->validate($account);
+      if($errors->count() > 0) {
+        return new jsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        // throw new HttpException(JsonResponse::HTTP_BAD_REQUEST, "the request is incorrrect")
+      }
+
       $em->persist($account);
       $em->flush();
 
@@ -86,7 +98,7 @@ class AccountController extends AbstractController
      * @return jsonResponse Returns an array of account objects updated
      */
     #[Route('/api/accounts/{id}', name: 'updateAccount', methods: ['PUT'])]
-    public function updateAccount(Request $request, SerializerInterface $serializer, Account $currentAccount, EntityManagerInterface $em, AccountRepository $accountRepository): JsonResponse
+    public function updateAccount(Request $request, SerializerInterface $serializer, Account $currentAccount, EntityManagerInterface $em, AccountRepository $accountRepository, ValidatorInterface $validator): JsonResponse
     {
       $updatedAccount = $serializer->deserialize(
         $request->getContent(),
@@ -94,7 +106,16 @@ class AccountController extends AbstractController
         'json',
         [AbstractNormalizer::OBJECT_TO_POPULATE => $currentAccount]
       );
+      
       $updatedAccount->setUpdatedAt(new \DateTimeImmutable());
+
+      // we check errors
+      $errors = $validator->validate($updatedAccount);
+      if($errors->count() > 0) {
+        return new jsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        // throw new HttpException(JsonResponse::HTTP_BAD_REQUEST, "the request is incorrrect")
+      }
+
       $em->persist($updatedAccount);
       $em->flush();
 

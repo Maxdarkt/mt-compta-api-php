@@ -7,6 +7,7 @@ use App\Repository\AccountRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 class Account
@@ -19,6 +20,8 @@ class Account
 
     #[ORM\Column(length: 55)]
     #[Groups(['getAccounts'])]
+    #[Assert\NotBlank(message: 'The company name cannot be empty.')]
+    #[Assert\Length(min: 2, max: 55, minMessage: 'the company name must be at least {{ limit }} characters long', maxMessage: 'the company name must have a maximum of {{ limit }} characters')]
     private ?string $company = null;
 
     #[ORM\Column(length: 55, nullable: true)]
@@ -31,18 +34,26 @@ class Account
 
     #[ORM\Column(length: 150)]
     #[Groups(['getAccounts'])]
+    #[Assert\NotBlank(message: 'The address cannot be empty.')]
+    #[Assert\Length(min: 5, max: 150, minMessage: 'the address must be at least {{ limit }} characters long', maxMessage: 'the address must have a maximum of {{ limit }} characters')]
     private ?string $address = null;
 
     #[ORM\Column]
     #[Groups(['getAccounts'])]
+    #[Assert\NotBlank(message: 'The postal code cannot be empty.')]
+    #[Assert\Length(min: 4, max: 7, minMessage: 'the postal code must be at least {{ limit }} characters long', maxMessage: 'the postal code must have a maximum of {{ limit }} characters')]
     private ?int $postal = null;
 
     #[ORM\Column(length: 50)]
     #[Groups(['getAccounts'])]
+    #[Assert\NotBlank(message: 'The city cannot be empty.')]
+    #[Assert\Length(min: 2, max: 50, minMessage: 'the city must be at least {{ limit }} characters long', maxMessage: 'the city must have a maximum of {{ limit }} characters')]
     private ?string $city = null;
 
     #[ORM\Column(length: 50)]
     #[Groups(['getAccounts'])]
+    #[Assert\NotBlank(message: 'The country cannot be empty.')]
+    #[Assert\Length(min: 2, max: 50, minMessage: 'the country must be at least {{ limit }} characters long', maxMessage: 'the country must have a maximum of {{ limit }} characters')]
     private ?string $country = null;
 
     #[ORM\Column(length: 150, nullable: true)]
@@ -55,6 +66,8 @@ class Account
 
     #[ORM\Column(length: 10)]
     #[Groups(['getAccounts'])]
+    #[Assert\NotBlank(message: 'The currency cannot be empty.')]
+    #[Assert\Length(min: 1, max: 10, minMessage: 'the currency must be at least {{ limit }} characters long', maxMessage: 'the currency must have a maximum of {{ limit }} characters')]
     private ?string $currency = null;
 
     #[ORM\Column(nullable: true)]

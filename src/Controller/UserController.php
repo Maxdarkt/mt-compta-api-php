@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -25,6 +27,7 @@ class UserController extends AbstractController
     public function getAllUsers(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {
       $users = $userRepository->findAll();
+      // if $user is empty
       if(count($users) === 0) {
         $message = [
           'statusCode' => 404,
@@ -32,6 +35,7 @@ class UserController extends AbstractController
         ];
         return new JsonResponse($message, 404, ['accept' => 'json'], false);
       }
+      // if $user is filled
       $jsonUsers = $serializer->serialize($users, 'json', ['groups' => 'getUsers']);
       return new JsonResponse($jsonUsers, 200, ['accept' => 'json'], true);
     }
@@ -69,19 +73,25 @@ class UserController extends AbstractController
      * @return jsonResponse Returns an array of user objects created
      */
     #[Route('/api/users', name: 'createUser', methods: ['POST'])]
-    public function createUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, AccountRepository $accountRepository): JsonResponse
+    public function createUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, AccountRepository $accountRepository, UserRepository $userRepository, ValidatorInterface $validator): JsonResponse
     {
       $user = $serializer->deserialize($request->getContent(), User::class, 'json');
-
+      // retrieve account
       $content = $request->toArray();
-
       $accountId = $content['accountId'];
-
       $user->setAccount($accountRepository->find($accountId));
-
+      // set date
       $date = new \DateTimeImmutable();
       $user->setCreatedAt($date);
       $user->setUpdatedAt($date);
+
+      // we check errors
+      $errors = $validator->validate($user);
+      if($errors->count() > 0) {
+        return new jsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        // throw new HttpException(JsonResponse::HTTP_BAD_REQUEST, "the request is incorrrect")
+      }
+
       $em->persist($user);
       $em->flush();
 
@@ -95,7 +105,7 @@ class UserController extends AbstractController
      * @return jsonResponse Returns an array of user objects updated
      */
     #[Route('/api/users/{id}', name: 'updateAccount', methods: ['PUT'])]
-    public function updateAccount(Request $request, SerializerInterface $serializer, User $currentUser, EntityManagerInterface $em, AccountRepository $accountRepository): JsonResponse
+    public function updateAccount(Request $request, SerializerInterface $serializer, User $currentUser, EntityManagerInterface $em, AccountRepository $accountRepository, ValidatorInterface $validator): JsonResponse
     {
       $updatedUser = $serializer->deserialize(
         $request->getContent(),
@@ -105,6 +115,13 @@ class UserController extends AbstractController
       );
 
       $updatedUser->setUpdatedAt(new \DateTimeImmutable());
+
+      // we check errors
+      $errors = $validator->validate($updatedUser);
+      if($errors->count() > 0) {
+        return new jsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        // throw new HttpException(JsonResponse::HTTP_BAD_REQUEST, "the request is incorrrect")
+      }
 
       $em->persist($updatedUser);
       $em->flush();
